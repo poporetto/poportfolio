@@ -167,43 +167,58 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 5000);
         }
     }
-});
 
-// GSAP Animation Setup (ready for implementation)
-// Uncomment and customize these when you're ready to add GSAP animations
-
-/*
-document.addEventListener('DOMContentLoaded', function() {
-    // GSAP ScrollTrigger plugin (if you want to use it)
-    // gsap.registerPlugin(ScrollTrigger);
-    
-    // Example: Animate floating illustrations
-    const floatingElements = document.querySelectorAll('.floating-illustration');
-    
-    floatingElements.forEach((el, index) => {
-        gsap.to(el, {
-            y: -30,
-            x: Math.sin(index) * 20,
-            rotation: 360,
-            duration: 3 + index,
-            repeat: -1,
-            yoyo: true,
-            ease: "power1.inOut"
+    // GSAP hero heading animation + draggable floating shapes
+    if (typeof gsap !== "undefined") {
+        const heroTimeline = gsap.timeline({
+            defaults: { duration: 0.9, ease: "power3.out" }
         });
-    });
-    
-    // Example: Scroll-triggered animations
-    gsap.utils.toArray('.animate-on-scroll').forEach(element => {
-        gsap.from(element, {
-            opacity: 0,
-            y: 50,
-            duration: 1,
-            scrollTrigger: {
-                trigger: element,
-                start: "top 80%",
-                toggleActions: "play none none reverse"
+
+        heroTimeline
+            .from(".hero-heading", {
+                opacity: 0,
+                y: 50,
+                skewY: 4
+            })
+            .from(".hero-subtitle", {
+                opacity: 0,
+                y: 30
+            }, "-=0.5")
+            .from(".hero-cta", {
+                opacity: 1,
+                y: 20
+            }, "-=0.5")
+            .from(".hero-illustration", {
+                opacity: 0,
+                x: 40
+            }, "-=0.6")
+            .fromTo(".text-accent", {
+                filter: "brightness(1)",
+            }, {
+                filter: "brightness(1.4)",
+                duration: 0.6,
+                yoyo: true,
+                repeat: 1
+            }, "-=0.3");
+
+        // Draggable floating illustrations with optional inertia
+        if (typeof Draggable !== "undefined") {
+            if (typeof InertiaPlugin !== "undefined") {
+                gsap.registerPlugin(Draggable, InertiaPlugin);
+            } else {
+                gsap.registerPlugin(Draggable);
             }
-        });
-    });
+
+            Draggable.create(".floating-illustration", {
+                type: "x,y",
+                edgeResistance: 0.85,
+                bounds: ".hero-section",
+                inertia: typeof InertiaPlugin !== "undefined",
+                onPress: function () {
+                    // stop CSS float animation so GSAP transforms fully control position
+                    this.target.style.animation = "none";
+                }
+            });
+        }
+    }
 });
-*/
